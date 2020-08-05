@@ -1,0 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+
+body {
+  font-family: "Nunito", "sans-serif";
+}
+
+.auth * {
+  display: inline;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  height: calc(100vh - 75px);
+}
+
+.calendar__day {
+  padding: 10px;
+  padding-top: 10px;
+  height: auto;
+  border: 0.5px solid rgb(218, 220, 224);
+  overflow: scroll;
+}

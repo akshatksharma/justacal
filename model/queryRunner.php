@@ -36,18 +36,20 @@ class queryRunner
 
     }
 
-    public function insert($query, $types = null, $items = null)
+    public function modify($query, $types = null, $items = null)
     {
         $stmt = $this->mysqli->prepare($query);
 
         if (!$stmt) {
             printf("Query Prep Failed: %s\n", $this->mysqli->error);
-            exit;
-        }
+            return false;
+        } else {
+            $stmt->bind_param($types, ...$items);
+            $stmt->execute();
+            $stmt->close();
 
-        $stmt->bind_param($types, ...$items);
-        $stmt->execute();
-        $stmt->close();
+            return true;
+        }
     }
 
 }

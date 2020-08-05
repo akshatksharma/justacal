@@ -15,7 +15,7 @@ $passwordSH = password_hash($passwordRaw, PASSWORD_DEFAULT);
 
 $queryrunner = new queryRunner();
 $queryrunner->connect();
-$queryrunner->insert("insert into users (username, password) values (?,?)", "ss", [$username, $passwordSH]);
+$queryrunner->modify("insert into users (username, password) values (?,?)", "ss", [$username, $passwordSH]);
 
 $data = array("success" => true);
 

@@ -42,12 +42,12 @@ const login = async () => {
     });
     if (!res.ok) console.log("failure");
     const data = await res.json();
-    userInfo.innerHTML = "logged in as: " + data.username;
-    window.token = data.token;
+    userInfo.id = data.userid;
+    userInfo.innerHTML = data.username;
+    document.getElementsByName("csrf-token")[0].content = data.token;
 
     loadEvents();
     console.log(data);
-    console.log(window);
   } catch (error) {
     console.error(error);
   }
@@ -57,12 +57,13 @@ const addEvent = async () => {
   const eventName = document.getElementById("name");
   const eventDate = document.getElementById("date");
   const eventTime = document.getElementById("time");
+  const token = document.getElementsByName("csrf-token")[0].content;
 
   const eventData = {
-    name: eventName.value,
-    date: eventDate.value,
-    time: eventTime.value,
-    token: window.token ? window.token : -1,
+    name: eventName.value || "",
+    date: eventDate.value || "",
+    time: eventTime.value || "",
+    token: token || -1,
   };
 
   try {
@@ -76,7 +77,7 @@ const addEvent = async () => {
 
     const data = await response.json();
     loadEvents();
-    console.log(data.name, data.date, data.time);
+    console.log(data);
 
     eventDate.value = "";
     eventTime.value = "";
@@ -86,9 +87,84 @@ const addEvent = async () => {
   }
 };
 
-const loadEvents = async () => {
-  const container = document.getElementsByClassName("events")[0];
+async function deleteEvent() {
+  const userid = document.getElementsByClassName("loggeduser")[0].id;
+  const comment = this.parentElement;
+  const token = document.getElementsByName("csrf-token")[0].content;
 
+  const userData = {
+    userId: userid,
+    commentId: comment.id,
+    token: token ? token : -1,
+  };
+
+  try {
+    const response = await fetch("deleteEvent.php", {
+      method: "POST",
+      body: JSON.stringify(userData),
+      headers: { "content-type": "application/json" },
+    });
+
+    if (!response.ok) console.log("failure");
+    const data = await response.json();
+    console.log(data);
+
+    if (data.success == true) comment.remove();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function updateEvent() {
+  const userid = document.getElementsByClassName("loggeduser")[0].id;
+  const event = this.parentElement;
+  const updateText = event.getElementsByClassName("changeName")[0].value;
+  const updateDate = event.getElementsByClassName("changeDate")[0].value;
+  const updateTime = event.getElementsByClassName("changeTime")[0].value;
+  const token = document.getElementsByName("csrf-token")[0].content;
+
+  const userData = {
+    userId: userid,
+    commentId: event.id,
+    updateText: updateText,
+    updateDate: updateDate,
+    updateTime: updateTime,
+    token: token ? token : -1,
+  };
+
+  try {
+    const response = await fetch("updateEvent.php", {
+      method: "POST",
+      body: JSON.stringify(userData),
+      headers: { "content-type": "application/json" },
+    });
+
+    if (!response.ok) console.log("failure");
+    // const text = await response.text();
+    // console.log(text);
+    const data = await response.json();
+    console.log(data);
+
+    if (data.success == true) {
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const loadDOM = () => {
+  const calItems = document.getElementsByClassName("calendar")[0].children;
+
+  for (let i = 0; i < calItems.length; i++) {
+    const calItem = calItems[i];
+
+    const day = document.createElement("p");
+    day.textContent = `${i + 1}`;
+    calItem.appendChild(day);
+  }
+};
+
+const loadEvents = async () => {
   try {
     const res = await fetch("loadEvents.php", {
       method: "POST",
@@ -100,21 +176,57 @@ const loadEvents = async () => {
 
     const data = await res.json();
 
-    container.innerHTML = "";
-    for (const [event, info] of await Object.entries(data)) {
+    console.time("test");
+    for (const [date, info] of await Object.entries(data)) {
+      const [year, month, day] = info.start_date.split("-");
+
+      const domDate = document.getElementById(day);
+      domDate.innerHTML = `${day}`;
+
+      const event = document.createElement("div");
+      event.id = info.id;
+
       const item = document.createElement("p");
-      const allInfo = `${info.title}: ${info.start_date} @ ${info.start_time}`;
-      item.innerHTML = allInfo;
+      item.innerHTML = `${info.title}: ${info.start_date} @ ${info.start_time}`;
 
-      container.appendChild(item);
+      const deleteButton = document.createElement("button");
+      deleteButton.innerHTML = "delete";
+      deleteButton.onclick = deleteEvent;
+
+      const editButton = document.createElement("button");
+      editButton.innerHTML = "edit";
+      editButton.onclick = updateEvent;
+
+      const updater = document.createElement("div");
+      const updateName = document.createElement("input");
+      updateName.type = "text";
+      updateName.className = "changeName";
+      const updateDate = document.createElement("input");
+      updateDate.type = "date";
+      updateDate.className = "changeDate";
+      const updateTime = document.createElement("input");
+      updateTime.type = "time";
+      updateTime.className = "changeTime";
+
+      updater.appendChild(updateName);
+      updater.appendChild(updateDate);
+      updater.appendChild(updateTime);
+
+      event.appendChild(item);
+      event.appendChild(deleteButton);
+      event.appendChild(editButton);
+      event.appendChild(updater);
+
+      domDate.appendChild(event);
     }
-
     console.log(data);
+    console.timeEnd("test");
   } catch (error) {
     console.error(error);
   }
 };
-
+loadDOM();
+loadEvents();
 document.getElementById("add").onclick = addEvent;
 document.getElementById("signup").onclick = signup;
 document.getElementById("login").onclick = login;

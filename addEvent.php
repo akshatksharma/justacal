@@ -28,10 +28,10 @@ if (!hash_equals($_SESSION['token'], $token)) {
 require "./model/queryRunner.php";
 $queryrunner = new queryRunner();
 $queryrunner->connect();
-$queryrunner->insert("insert into events (title, user_id, start_date, start_time) values (?,?,?,?)", "siss", array($name, $id, $date, $time));
+$status = $queryrunner->modify("insert into events (title, user_id, start_date, start_time) values (?,?,?,?)", "siss", array($name, $id, $date, $time));
 
 echo json_encode(array(
-    "name" => $name,
-    "date" => $date,
-    "time" => $time,
+    "name" => htmlentities($name),
+    "date" => htmlentities($date),
+    "time" => htmlentities($time),
 ));
