@@ -52,4 +52,10 @@ class queryRunner
         }
     }
 
+    public function getInsertId()
+    {
+        $lastInsertId = $this->mysqli->insert_id ? $this->mysqli->insert_id : null;
+        return $lastInsertId;
+    }
+
 }

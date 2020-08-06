@@ -52,37 +52,49 @@ session_start();
         </div>
         <div class="test">
             <div class="calendar">
-                <div id="01" class="calendar__day"></div>
-                <div id="02" class="calendar__day"></div>
-                <div id="03" class="calendar__day"></div>
-                <div id="04" class="calendar__day"></div>
-                <div id="05" class="calendar__day"></div>
-                <div id="06" class="calendar__day"></div>
-                <div id="07" class="calendar__day"></div>
-                <div id="08" class="calendar__day"></div>
-                <div id="09" class="calendar__day"></div>
-                <div id="10" class="calendar__day"></div>
-                <div id="11" class="calendar__day"></div>
-                <div id="12" class="calendar__day"></div>
-                <div id="13" class="calendar__day"></div>
-                <div id="14" class="calendar__day"></div>
-                <div id="15" class="calendar__day"></div>
-                <div id="16" class="calendar__day"></div>
-                <div id="17" class="calendar__day"></div>
-                <div id="18" class="calendar__day"></div>
-                <div id="19" class="calendar__day"></div>
-                <div id="20" class="calendar__day"></div>
-                <div id="21" class="calendar__day"></div>
-                <div id="22" class="calendar__day"></div>
-                <div id="23" class="calendar__day"></div>
-                <div id="24" class="calendar__day"></div>
-                <div id="25" class="calendar__day"></div>
-                <div id="26" class="calendar__day"></div>
-                <div id="27" class="calendar__day"></div>
-                <div id="28" class="calendar__day"></div>
-                <div id="29" class="calendar__day"></div>
-                <div id="30" class="calendar__day"></div>
-                <div id="31" class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+                <div class="calendar__day"></div>
+
             </div>
         </div>
     </div>

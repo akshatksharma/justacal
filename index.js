@@ -1,5 +1,10 @@
 import { Week, Month } from "./calendar";
 
+const d = new Date();
+const m = d.getMonth();
+const y = d.getFullYear();
+let currMonth = new Month(y, m);
+
 const signup = async () => {
   const username = document.getElementById("username__signup").value; // Get the username from the form
   const password = document.getElementById("password__signup").value;
@@ -46,7 +51,7 @@ const login = async () => {
     userInfo.innerHTML = data.username;
     document.getElementsByName("csrf-token")[0].content = data.token;
 
-    loadEvents();
+    loadEvents(currMonth);
     console.log(data);
   } catch (error) {
     console.error(error);
@@ -76,8 +81,11 @@ const addEvent = async () => {
     if (!response.ok) console.log("failure");
 
     const data = await response.json();
-    loadEvents();
-    console.log(data);
+    const [year, month, day] = await data.start_date.split("-");
+
+    const domDate = document.getElementById(day);
+    const banner = makeBanner(await data);
+    domDate.appendChild(banner);
 
     eventDate.value = "";
     eventTime.value = "";
@@ -140,8 +148,6 @@ async function updateEvent() {
     });
 
     if (!response.ok) console.log("failure");
-    // const text = await response.text();
-    // console.log(text);
     const data = await response.json();
     console.log(data);
 
@@ -152,19 +158,39 @@ async function updateEvent() {
   }
 }
 
-const loadDOM = () => {
-  const calItems = document.getElementsByClassName("calendar")[0].children;
+const loadEvents = async (month) => {
+  const dates = [];
+  const weeks = month.getWeeks();
 
-  for (let i = 0; i < calItems.length; i++) {
-    const calItem = calItems[i];
+  weeks.forEach((week) => {
+    const days = week.getDates();
+    days.forEach((day) => {
+      dates.push(day.toISOString());
+    });
+  });
+
+  const days = dates.map((date) => date.match(/-(\d\d)T/)[1]);
+  const months = dates.map((date) => date.match(/-(\d\d)-/)[1]);
+  const years = dates.map((date) => date.match(/^(\d*)-/)[1]);
+
+  const calItems = document.getElementsByClassName("calendar")[0].children;
+  Array.from(calItems).forEach((item, i) => {
+    item.id = days[i];
 
     const day = document.createElement("p");
-    day.textContent = `${i + 1}`;
-    calItem.appendChild(day);
-  }
-};
+    day.textContent = days[i];
+    item.appendChild(day);
+  });
 
-const loadEvents = async () => {
+  const formattedDates = days.map((day, i) => [
+    `${years[i]}-${months[i]}-${day}`,
+    years[i],
+    months[i],
+    day,
+  ]);
+
+  console.log(formattedDates);
+
   try {
     const res = await fetch("loadEvents.php", {
       method: "POST",
@@ -175,58 +201,95 @@ const loadEvents = async () => {
     }
 
     const data = await res.json();
-
+    console.log(data);
     console.time("test");
-    for (const [date, info] of await Object.entries(data)) {
-      const [year, month, day] = info.start_date.split("-");
 
-      const domDate = document.getElementById(day);
-      domDate.innerHTML = `${day}`;
+    formattedDates.forEach((date) => {
+      const formattedDate = date[0];
+      const day = date[3];
 
-      const event = document.createElement("div");
-      event.id = info.id;
+      if (data[formattedDate]) {
+        const domDate = document.getElementById(day);
+        const events = data[formattedDate];
 
-      const item = document.createElement("p");
-      item.innerHTML = `${info.title}: ${info.start_date} @ ${info.start_time}`;
+        events.sort((e1, e2) => {
+          if (e1.start_time < e2.start_time) return -1;
+          else if (e1.start_time > e2.start_time) return 1;
+          return 0;
+        });
 
-      const deleteButton = document.createElement("button");
-      deleteButton.innerHTML = "delete";
-      deleteButton.onclick = deleteEvent;
+        for (const event of events) {
+          const banner = makeBanner(event);
+          domDate.appendChild(banner);
+        }
+      }
+    });
 
-      const editButton = document.createElement("button");
-      editButton.innerHTML = "edit";
-      editButton.onclick = updateEvent;
+    // for (const [date, events] of await Object.entries(data)) {
+    //   const [year, month, day] = date.split("-");
+    //   const domDate = document.getElementById(day);
+    //   domDate.innerHTML = `${day}`;
 
-      const updater = document.createElement("div");
-      const updateName = document.createElement("input");
-      updateName.type = "text";
-      updateName.className = "changeName";
-      const updateDate = document.createElement("input");
-      updateDate.type = "date";
-      updateDate.className = "changeDate";
-      const updateTime = document.createElement("input");
-      updateTime.type = "time";
-      updateTime.className = "changeTime";
+    // events.sort((e1, e2) => {
+    //   if (e1.start_time < e2.start_time) return -1;
+    //   else if (e1.start_time > e2.start_time) return 1;
+    //   return 0;
+    // });
 
-      updater.appendChild(updateName);
-      updater.appendChild(updateDate);
-      updater.appendChild(updateTime);
+    //   for (const event of events) {
+    //     const banner = makeBanner(event);
+    //     domDate.appendChild(banner);
+    //   }
 
-      event.appendChild(item);
-      event.appendChild(deleteButton);
-      event.appendChild(editButton);
-      event.appendChild(updater);
+    //   const deleteButton = document.createElement("button");
+    //   deleteButton.innerHTML = "delete";
+    //   deleteButton.onclick = deleteEvent;
 
-      domDate.appendChild(event);
-    }
+    //   const editButton = document.createElement("button");
+    //   editButton.innerHTML = "edit";
+    //   editButton.onclick = updateEvent;
+
+    //   const updater = document.createElement("div");
+    //   const updateName = document.createElement("input");
+    //   updateName.type = "text";
+    //   updateName.className = "changeName";
+    //   const updateDate = document.createElement("input");
+    //   updateDate.type = "date";
+    //   updateDate.className = "changeDate";
+    //   const updateTime = document.createElement("input");
+    //   updateTime.type = "time";
+    //   updateTime.className = "changeTime";
+
+    //   updater.appendChild(updateName);
+    //   updater.appendChild(updateDate);
+    //   updater.appendChild(updateTime);
+
+    //   event.appendChild(item);
+    //   event.appendChild(deleteButton);
+    //   event.appendChild(editButton);
+    //   event.appendChild(updater);
+
+    //   domDate.appendChild(event);
+    // }
     console.log(data);
     console.timeEnd("test");
   } catch (error) {
     console.error(error);
   }
 };
-loadDOM();
-loadEvents();
+
+const makeBanner = (event) => {
+  const banner = document.createElement("div");
+  banner.id = event.id;
+  const info = document.createElement("p");
+  const eventTime = event.start_time.split(":00")[0];
+  info.innerHTML = `${event.title} @ ${eventTime}`;
+  banner.appendChild(info);
+
+  return banner;
+};
+
+loadEvents(currMonth);
 document.getElementById("add").onclick = addEvent;
 document.getElementById("signup").onclick = signup;
 document.getElementById("login").onclick = login;
