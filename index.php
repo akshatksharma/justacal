@@ -51,51 +51,13 @@ session_start();
             <button id="add" class="add">Submit</button>
         </div>
         <div class="test">
-            <div class="calendar">
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-                <div class="calendar__day"></div>
-
-            </div>
+            <span class="controls">
+                <button class="prev">&lt </button>
+                <button class="next">&gt</button>
+            </span>
+            <div class="year"></div>
+            <div class="month"></div>
+            <div class="calendar"></div>
         </div>
     </div>
 </body>

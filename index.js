@@ -5,6 +5,30 @@ const m = d.getMonth();
 const y = d.getFullYear();
 let currMonth = new Month(y, m);
 
+const monthMap = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function nextMonth() {
+  currMonth = currMonth.nextMonth();
+  loadEvents(currMonth);
+}
+function prevMonth() {
+  currMonth = currMonth.prevMonth();
+  loadEvents(currMonth);
+}
+
 const signup = async () => {
   const username = document.getElementById("username__signup").value; // Get the username from the form
   const password = document.getElementById("password__signup").value;
@@ -83,13 +107,15 @@ const addEvent = async () => {
     const data = await response.json();
     const [year, month, day] = await data.start_date.split("-");
 
-    const domDate = document.getElementById(day);
-    const banner = makeBanner(await data);
-    domDate.appendChild(banner);
+    if (parseInt(month) + 1 === currMonth.month) {
+      const domDate = document.getElementById(day);
+      const banner = makeBanner(await data);
+      domDate.appendChild(banner);
 
-    eventDate.value = "";
-    eventTime.value = "";
-    eventName.value = "";
+      eventDate.value = "";
+      eventTime.value = "";
+      eventName.value = "";
+    } else return;
   } catch (error) {
     console.error(error);
   }
@@ -159,9 +185,12 @@ async function updateEvent() {
 }
 
 const loadEvents = async (month) => {
+  document.getElementsByClassName("year")[0].textContent = month.year;
+  document.getElementsByClassName("month")[0].textContent =
+    monthMap[month.month];
+
   const dates = [];
   const weeks = month.getWeeks();
-
   weeks.forEach((week) => {
     const days = week.getDates();
     days.forEach((day) => {
@@ -173,13 +202,18 @@ const loadEvents = async (month) => {
   const months = dates.map((date) => date.match(/-(\d\d)-/)[1]);
   const years = dates.map((date) => date.match(/^(\d*)-/)[1]);
 
-  const calItems = document.getElementsByClassName("calendar")[0].children;
-  Array.from(calItems).forEach((item, i) => {
-    item.id = days[i];
+  const calendarContainer = document.getElementsByClassName("calendar")[0];
+  calendarContainer.innerHTML = "";
+  days.forEach((day) => {
+    const domDay = document.createElement("div");
+    domDay.className = "calendar__day";
+    domDay.innerHTML = "";
+    domDay.id = day;
 
-    const day = document.createElement("p");
-    day.textContent = days[i];
-    item.appendChild(day);
+    const num = document.createElement("p");
+    num.textContent = day;
+    domDay.appendChild(num);
+    calendarContainer.appendChild(domDay);
   });
 
   const formattedDates = days.map((day, i) => [
@@ -271,6 +305,7 @@ const loadEvents = async (month) => {
 
     //   domDate.appendChild(event);
     // }
+
     console.log(data);
     console.timeEnd("test");
   } catch (error) {
@@ -285,11 +320,12 @@ const makeBanner = (event) => {
   const eventTime = event.start_time.split(":00")[0];
   info.innerHTML = `${event.title} @ ${eventTime}`;
   banner.appendChild(info);
-
   return banner;
 };
 
 loadEvents(currMonth);
+document.getElementsByClassName("prev")[0].onclick = prevMonth;
+document.getElementsByClassName("next")[0].onclick = nextMonth;
 document.getElementById("add").onclick = addEvent;
 document.getElementById("signup").onclick = signup;
 document.getElementById("login").onclick = login;
