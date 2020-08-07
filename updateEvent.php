@@ -32,9 +32,10 @@ $status = $queryrunner->modify("update events set title=?, start_date=?, start_t
 if ($status == true) {
     echo json_encode(array(
         "success" => true,
-        "newTitle" => htmlentities($updateTitle),
-        "newDate" => htmlentities($updateDate),
-        "newTime" => htmlentities($updateTime),
+        "id" => htmlentities($commentid),
+        "title" => htmlentities($updateTitle),
+        "start_date" => htmlentities($updateDate),
+        "start_time" => htmlentities($updateTime),
     ));
 } else {
     echo json_encode(array(
