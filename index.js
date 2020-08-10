@@ -53,6 +53,7 @@ const signup = async () => {
   }
 };
 
+
 const login = async () => {
   const signUp = document.getElementsByClassName("button--signup")[0];
   const loginOpen = document.getElementsByClassName("button--login")[0];
@@ -87,14 +88,64 @@ const login = async () => {
   }
 };
 
+const addTag = async () => {
+  const eventColor = document.getElementById("color");
+  const eventTag = document.getElementById("tag");
+  const token = document.getElementsByName("csrf-token")[0].content;
+
+  const tagData = {
+    color: eventColor.value || "",
+    tag: eventTag.value || "",
+    token: token || -1,
+  };
+
+  try {
+    const response = await fetch("addTag.php", {
+      method: "POST",
+      body: JSON.stringify(tagData),
+      headers: { "content-type": "application/json" },
+    });
+
+    if (!response.ok) console.log("failure");
+
+    const data = await response.json();
+
+    const tagSelector = document.getElementById("tags");
+    const updateTagSelector = document.getElementsByClassName(
+      "update__tags"
+    )[0];
+    const filterSelector = document.getElementById("filter");
+
+    const tagOption = document.createElement("option");
+    tagOption.innerText = data.tag;
+    tagOption.value = data.color;
+
+    const filterOption = tagOption.cloneNode();
+    filterOption.innerText = data.tag;
+    filterOption.value = data.color;
+    const updateOption = tagOption.cloneNode();
+    updateOption.innerText = data.tag;
+    updateOption.value = data.color;
+
+    tagSelector.appendChild(tagOption);
+    filterSelector.appendChild(filterOption);
+    updateTagSelector.appendChild(updateOption);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const addEvent = async () => {
   const eventName = document.getElementById("name");
+  const eventTag = document.getElementById("tags");
   const eventDate = document.getElementById("date");
   const eventTime = document.getElementById("time");
   const token = document.getElementsByName("csrf-token")[0].content;
 
   const eventData = {
     name: eventName.value || "",
+    color: eventTag.value || "",
+    tag: eventTag.options[eventTag.selectedIndex].text || "",
     date: eventDate.value || "",
     time: eventTime.value || "",
     token: token || -1,
@@ -109,11 +160,9 @@ const addEvent = async () => {
 
     if (!response.ok) console.log("failure");
 
+    // console.log(await response.text());
     const data = await response.json();
     const [year, month, day] = await data.start_date.split("-");
-
-    console.log(currMonth.month);
-    console.log(parseInt(month));
 
     if (parseInt(month) - 1 === currMonth.month) {
       const domDate = document.getElementById(`${month}-${day}`);
@@ -149,7 +198,6 @@ async function deleteEvent() {
 
     if (!response.ok) console.log("failure");
     const data = await response.json();
-    console.log(data);
 
     if (data.success == true) comment.remove();
   } catch (error) {
@@ -162,6 +210,7 @@ async function updateEvent() {
   const event = this.parentElement.parentElement.parentElement.parentElement;
   const commentId = event.classList.item(2);
   const updateText = event.getElementsByClassName("update__title")[0].value;
+  const updateTag = event.getElementsByClassName("update__tags")[0];
   const updateDate = event.getElementsByClassName("update__date")[0].value;
   const updateTime = event.getElementsByClassName("update__time")[0].value;
   const token = document.getElementsByName("csrf-token")[0].content;
@@ -170,6 +219,8 @@ async function updateEvent() {
     userId: userid,
     commentId: commentId,
     updateText: updateText,
+    color: updateTag.value || "",
+    tag: updateTag.options[updateTag.selectedIndex].text || "",
     updateDate: updateDate,
     updateTime: updateTime,
     token: token ? token : -1,
@@ -184,7 +235,6 @@ async function updateEvent() {
 
     if (!response.ok) console.log("failure");
     const data = await response.json();
-    console.log(data);
 
     if (data.success == true) {
       const [year, month, day] = await data.start_date.split("-");
@@ -196,15 +246,51 @@ async function updateEvent() {
         const banner = makeBanner(await data);
         domDate.appendChild(banner);
       }
-      console.log(currMonth);
-      console.log(year, month, day);
     }
   } catch (error) {
     console.error(error);
   }
 }
 
-const loadEvents = async (month) => {
+const loadTags = async () => {
+  const tagSelector = document.getElementById("tags");
+  const filterSelector = document.getElementById("filter");
+  const updateTagSelector = document.getElementsByClassName("update__tags")[0];
+
+  try {
+    const res = await fetch("loadTags.php", {
+      method: "POST",
+    });
+
+    if (!res.ok) {
+      console.log("failure");
+    }
+
+    const data = await res.json();
+
+    data.forEach((tag) => {
+      const tagOption = document.createElement("option");
+      tagOption.innerText = tag.name;
+      tagOption.value = tag.color;
+
+      const filterOption = tagOption.cloneNode();
+      filterOption.innerText = tag.name;
+      filterOption.value = tag.color;
+
+      const updateTagOption = tagOption.cloneNode();
+      updateTagOption.innerText = tag.name;
+      updateTagOption.value = tag.color;
+
+      filterSelector.appendChild(filterOption);
+      tagSelector.appendChild(tagOption);
+      updateTagSelector.appendChild(updateTagOption);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const loadEvents = async (month, filter = "") => {
   document.getElementsByClassName("year")[0].textContent = month.year;
   document.getElementsByClassName("month")[0].textContent =
     monthMap[month.month];
@@ -243,11 +329,13 @@ const loadEvents = async (month) => {
     day,
   ]);
 
-  console.log(formattedDates);
+  const filterData = { filter: filter };
 
   try {
     const res = await fetch("loadEvents.php", {
       method: "POST",
+      body: JSON.stringify(filterData),
+      headers: { "content-type": "application/json" },
     });
 
     if (!res.ok) {
@@ -255,8 +343,6 @@ const loadEvents = async (month) => {
     }
 
     const data = await res.json();
-    console.log(data);
-    console.time("test");
 
     formattedDates.forEach((date) => {
       const formattedDate = date[0];
@@ -279,18 +365,21 @@ const loadEvents = async (month) => {
         }
       }
     });
-
-    console.log(data);
-    console.timeEnd("test");
   } catch (error) {
     console.error(error);
   }
 };
 
+//
+// helper functions
+//
+
 const makeBanner = (event_) => {
   const banner = document.createElement("div");
   banner.classList.add("event");
   banner.id = event_.id;
+
+  banner.style.border = `2px solid ${event_.color}`;
 
   const info = document.createElement("span");
   info.classList.add("info");
@@ -387,12 +476,34 @@ const controlModals = () => {
   });
 };
 
+function changeColor() {
+  const color = this.value;
+  this.style.color = color;
+}
+
+function runFilter() {
+  const color = this.value;
+  this.style.color = color;
+  const filterSelector = document.getElementById("filter");
+  const filter =
+    filterSelector.options[filterSelector.selectedIndex].text === "None"
+      ? ""
+      : filterSelector.options[filterSelector.selectedIndex].text;
+
+  loadEvents(currMonth, filter);
+}
+
 const main = () => {
   document.getElementsByClassName("prev")[0].onclick = prevMonth;
   document.getElementsByClassName("next")[0].onclick = nextMonth;
-  document.getElementById("add").onclick = addEvent;
+  document.getElementById("addEvent").onclick = addEvent;
+  document.getElementById("addTag").onclick = addTag;
 
   document.getElementsByClassName("update__submit")[0].onclick = updateEvent;
+
+  document.getElementById("tags").onchange = changeColor;
+  document.getElementsByClassName("update__tags")[0].onchange = changeColor;
+  document.getElementById("filter").onchange = runFilter;
 
   const userid = document.getElementsByClassName("loggeduser")[0].id;
   const signupButton = document.getElementsByClassName("button--signup")[0];
@@ -411,6 +522,7 @@ const main = () => {
   submitLogin.onclick = login;
 
   loadEvents(currMonth);
+  loadTags();
   controlModals();
 };
 

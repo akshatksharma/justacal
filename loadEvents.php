@@ -3,13 +3,22 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
     session_id("user");
 }
+header("Content-Type: application/json");
 
+$json_str = file_get_contents('php://input');
+$json_obj = json_decode($json_str, true);
+
+$filter = (string) $json_obj['filter'];
 $id = empty($_SESSION['userid']) ? -1 : $_SESSION['userid'];
 
 require "./model/queryRunner.php";
 $queryrunner = new queryRunner();
 $queryrunner->connect();
-$result = $queryrunner->query("select id, title, user_id, start_date, start_time from events where user_id=?", "i", [$id]);
+if ($filter == "") {
+    $result = $queryrunner->query("select id, title, user_id, start_date, start_time, color, tag from events where user_id=?", "i", [$id]);
+} else {
+    $result = $queryrunner->query("select id, title, user_id, start_date, start_time, color, tag from events where user_id=? AND tag=?", "is", [$id, $filter]);
+}
 
 $data = array();
 while ($row = $result->fetch_assoc()) {

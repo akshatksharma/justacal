@@ -12,6 +12,8 @@ $json_obj = json_decode($json_str, true);
 $userid = (string) $json_obj['userId'];
 $commentid = (string) $json_obj['commentId'];
 $updateTitle = (string) $json_obj['updateText'];
+$updateColor = (string) $json_obj['color'];
+$updateTag = (string) $json_obj['tag'];
 $updateDate = (string) $json_obj['updateDate'];
 $updateTime = (string) $json_obj['updateTime'];
 $token = (string) $json_obj['token'];
@@ -27,12 +29,13 @@ if (!hash_equals($_SESSION['token'], $token)) {
 require "./model/queryRunner.php";
 $queryrunner = new queryRunner();
 $queryrunner->connect();
-$status = $queryrunner->modify("update events set title=?, start_date=?, start_time=? where user_id=? AND id=?", "sssii", [$updateTitle, $updateDate, $updateTime, $userid, $commentid]);
+$status = $queryrunner->modify("update events set title=?, start_date=?, start_time=?, tag=?, color=? where user_id=? AND id=?", "sssssii", [$updateTitle, $updateDate, $updateTime, $updateTag, $updateColor, $userid, $commentid]);
 
 if ($status == true) {
     echo json_encode(array(
         "success" => true,
         "id" => htmlentities($commentid),
+        "color" => htmlentities($updateColor),
         "title" => htmlentities($updateTitle),
         "start_date" => htmlentities($updateDate),
         "start_time" => htmlentities($updateTime),

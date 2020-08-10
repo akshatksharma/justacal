@@ -23,6 +23,10 @@ body {
   padding: 25px;
 }
 
+.controlBar {
+  display: flex;
+}
+
 .addEvents {
   margin-bottom: 15px;
 }
@@ -33,6 +37,8 @@ body {
 
 .auth {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .auth__info {
@@ -48,7 +54,7 @@ body {
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  height: calc(100vh - 100px);
+  height: calc(100vh - 125px);
 }
 
 .calendar__day {
@@ -60,6 +66,8 @@ body {
 }
 
 .event {
+  padding: 2px;
+  margin-bottom: 2px;
   width: 100%;
   display: inline-flex;
   justify-content: space-between;

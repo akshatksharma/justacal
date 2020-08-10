@@ -17,7 +17,7 @@ session_start();
 
 <body>
     <div class="page">
-        <div class="auth">
+        <nav class="auth">
             <div class="auth__info">
                 <p id="<?php echo empty($_SESSION['userid']) ? "" : $_SESSION['userid'] ?>" class="loggeduser">
                     <?php echo empty($_SESSION['username']) ? "" : $_SESSION['username'] ?></p>
@@ -28,7 +28,51 @@ session_start();
                     <button class="button--logout hidden" type="submit">Logout</button>
                 </form>
             </div>
-        </div>
+            <h1 class="pagetitle">calendar.</h1>
+        </nav>
+        <main class="main">
+            <div class="controlBar">
+                <div class="changeDate">
+                    <div class="year"></div>
+                    <div class="month"></div>
+                    <span class="main__controls">
+                        <button class="prev">&lt </button>
+                        <button class="next">&gt</button>
+                    </span>
+                </div>
+                <div class="addData">
+                    <div class="addTags">
+                        <label class="hidden" for="tag">Add Tag</label>
+                        <input id="tag" type="text" placeholder="Tag name" />
+                        <label class="hidden" for="color">Choose color</label>
+                        <input type="color" id="color" value="#7FAD81">
+                        <button id="addTag" class="add">Add tag</button>
+                    </div>
+                    <div class="addEvents">
+                        <label class="hidden" for="name">Add event</label>
+                        <input id="name" type="text" placeholder="Event name" />
+                        <label class="hidden" for="tags">Choose tag</label>
+                        <select name="tags" id="tags">
+                            <option selected disabled value="">Choose tag</option>
+                            <option value="">None</option>
+                        </select>
+                        <label class="hidden" for="date">Date</label>
+                        <input type="date" id="date" name="start-date" />
+                        <label class="hidden" for="time">Time</label>
+                        <input type="time" id="time" name="start-time" />
+                        <button id="addEvent" class="add">Add event</button>
+                    </div>
+                </div>
+            </div>
+            <div class="filterEvents">
+                <label class="hidden" for="filter">Choose filter</label>
+                <select name="" id="filter">
+                    <option selected disabled value="">Choose filter</option>
+                    <option value="">None</option>
+                </select>
+            </div>
+            <div class="calendar"></div>
+        </main>
         <div role="dialog" class="modal modal--signup">
             <div class="modal__content">
                 <div class="modal__header">
@@ -44,10 +88,10 @@ session_start();
                 </div>
                 <div class="modal__body">
                     <div class="form__inputs">
-                        <input type="text" name="username" id="username__signup" />
-                        <input type="password" name="password" id="password__signup" />
+                        <input type="text" name="username" id="username__signup" placeholder="username" />
+                        <input type="password" name="password" id="password__signup" placeholder="password" />
+                        <button id="signup" class="signup">Signup</button>
                     </div>
-                    <button id="signup" class="signup">Signup</button>
                     </form>
                 </div>
             </div>
@@ -67,10 +111,10 @@ session_start();
                 </div>
                 <div class="modal__body">
                     <div class="form__inputs">
-                        <input type="text" name="username" id="username__login" />
-                        <input type="password" name="password" id="password__login" />
+                        <input type="text" name="username" id="username__login" placeholder="username" />
+                        <input type=" password" name="password" id="password__login" placeholder="password" />
+                        <button id="login" class="login">Login</button>
                     </div>
-                    <button id="login" class="login">Login</button>
                 </div>
             </div>
         </div>
@@ -90,33 +134,16 @@ session_start();
                 <div class="modal__body">
                     <div class="updater">
                         <input class="update__title" type="text" placeholder="Event Name" />
+                        <select name="tags" class="update__tags">
+                            <option selected disabled value="">Choose tag</option>
+                            <option value="">None</option>
+                        </select>
                         <input class="update__date" type="date" name="start-date" />
                         <input class="update__time" type="time" name="start-time" />
                         <button class="update__submit" class="add">Edit</button>
                     </div>
                 </div>
             </div>
-        </div>
-        <h1 class="pagetitle">(copy) calendar</h1>
-        <div class="addEvents">
-            <label class="hidden" for="name">Add event</label>
-            <input id="name" type="text" placeholder="Event Name" />
-            <label class="hidden" for="date">Tag</label>
-            <input id="name" type="text" placeholder="Tag" />
-            <label class="hidden" for="date">Date</label>
-            <input type="date" id="date" name="start-date" />
-            <label class="hidden" for="time">Time</label>
-            <input type="time" id="time" name="start-time" />
-            <button id="add" class="add">Add event</button>
-        </div>
-        <div class="main">
-            <div class="year"></div>
-            <div class="month"></div>
-            <span class="main__controls">
-                <button class="prev">&lt </button>
-                <button class="next">&gt</button>
-            </span>
-            <div class="calendar"></div>
         </div>
     </div>
 </body>
